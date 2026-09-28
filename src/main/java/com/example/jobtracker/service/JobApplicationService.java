@@ -5,6 +5,8 @@ import com.example.jobtracker.model.dto.JobApplicationPatchRequest;
 import com.example.jobtracker.model.ApplicationStatus;
 import com.example.jobtracker.model.JobApplication;
 import com.example.jobtracker.repository.JobApplicationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,5 +76,9 @@ public class JobApplicationService {
 
     public List<JobApplication> getByCompanyAndStatus(String company, ApplicationStatus status) {
         return applicationRepository.findByCompanyAndStatus(company, status);
+    }
+
+    public Page<JobApplication> getApplicationByStatus(ApplicationStatus status, Pageable pageable) {
+        return applicationRepository.findByStatus(status, pageable);
     }
 }

@@ -7,6 +7,10 @@ import com.example.jobtracker.repository.JobApplicationRepository;
 import com.example.jobtracker.service.JobApplicationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -123,5 +127,19 @@ public class JobApplicationServiceTest {
         assertThrows(ApplicationNotFoundException.class,
                 () -> service.deleteApplication(1L));
         Mockito.verify(repository, Mockito.never()).deleteById(1L);
+    }
+
+    @Test
+    public void getByStatus_withPagination() {
+        JobApplicationRepository repository = Mockito.mock(JobApplicationRepository.class);
+        JobApplicationService service = new JobApplicationService(repository);
+        Page<JobApplication> page = Mockito.mock(Page.class);
+        Pageable pageable = PageRequest.of(0, 2,
+                Sort.by(Sort.Order.asc("company")));
+        Mockito.when(repository.findByStatus(APPLIED, pageable)).
+                thenReturn(page);
+        Page<JobApplication> result = service.getApplicationByStatus(APPLIED, pageable);
+        assertSame(page, result);
+        Mockito.verify(repository).findByStatus(APPLIED, pageable);
     }
 }

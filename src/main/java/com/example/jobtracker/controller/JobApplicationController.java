@@ -1,6 +1,7 @@
 package com.example.jobtracker.controller;
 
 import com.example.jobtracker.mapper.JobApplicationMapper;
+import com.example.jobtracker.model.dto.JobApplicationPageResponse;
 import com.example.jobtracker.model.dto.JobApplicationPatchRequest;
 import com.example.jobtracker.model.ApplicationStatus;
 import com.example.jobtracker.model.JobApplication;
@@ -8,6 +9,8 @@ import com.example.jobtracker.model.dto.JobApplicationRequest;
 import com.example.jobtracker.model.dto.JobApplicationResponse;
 import com.example.jobtracker.service.JobApplicationService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -98,6 +101,14 @@ public class JobApplicationController {
                                                                 updatedApplication) {
         JobApplication application = applicationService.partialUpdate(id, updatedApplication);
         JobApplicationResponse response = mapper.toResponse(application);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/status/{status}/page")
+    public ResponseEntity<JobApplicationPageResponse> getStatusWithPagination(@PathVariable  ApplicationStatus status,
+                                                                              Pageable pageable) {
+        Page<JobApplication> page = applicationService.getApplicationByStatus(status, pageable);
+        JobApplicationPageResponse response = mapper.toResponse_withPagination(page);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

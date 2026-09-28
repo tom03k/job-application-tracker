@@ -4,6 +4,7 @@ import com.example.jobtracker.controller.JobApplicationController;
 import com.example.jobtracker.exception.ApplicationNotFoundException;
 import com.example.jobtracker.mapper.JobApplicationMapper;
 import com.example.jobtracker.model.JobApplication;
+import com.example.jobtracker.model.dto.JobApplicationPageResponse;
 import com.example.jobtracker.model.dto.JobApplicationRequest;
 import com.example.jobtracker.model.dto.JobApplicationResponse;
 import com.example.jobtracker.service.JobApplicationService;
@@ -11,10 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.jobtracker.model.ApplicationStatus.APPLIED;
@@ -185,5 +189,72 @@ public class JobApplicationControllerTest {
         mockMvc.perform(delete("/applications/1"))
                 .andExpect(status().isNotFound());
         Mockito.verify(service).deleteApplication(1L);
+    }
+
+    @Test
+    public void getStatusWithPagination_returns200() throws Exception {
+        Page<JobApplication> page = Mockito.mock(Page.class);
+        JobApplicationPageResponse pageResponse = new JobApplicationPageResponse();
+        pageResponse.setTotalPages(2);
+        pageResponse.setSize(2);
+        pageResponse.setTotalElements(3);
+        pageResponse.setPage(0);
+
+        JobApplicationResponse response1 = new JobApplicationResponse();
+        response1.setStatus(APPLIED);
+        response1.setPosition("Developer");
+        response1.setCompany("Aldi");
+        response1.setId(1L);
+
+        JobApplicationResponse response2 = new JobApplicationResponse();
+        response2.setStatus(APPLIED);
+        response2.setPosition("Software Developer");
+        response2.setCompany("Lidl");
+        response2.setId(2L);
+
+        List<JobApplicationResponse> responses = List.of(response1, response2);
+        pageResponse.setContent(responses);
+
+        Mockito.when(service.getApplicationByStatus(Mockito.eq(APPLIED), Mockito.any(Pageable.class)))
+                .thenReturn(page);
+        Mockito.when(mapper.toResponse_withPagination(page)).thenReturn(pageResponse);
+        mockMvc.perform(get("/applications/status/{status}/page", "APPLIED")
+                .param("page", "0").param("size", "2")).andExpect(status().isOk());
+        Mockito.verify(service).getApplicationByStatus(Mockito.eq(APPLIED), Mockito.any(Pageable.class));
+    }
+
+    @Test
+    public void getStatusWithPagination_returns200_forSecondPage() throws Exception {
+        Page<JobApplication> page = Mockito.mock(Page.class);
+        JobApplicationPageResponse pageResponse = new JobApplicationPageResponse();
+        pageResponse.setTotalPages(2);
+        pageResponse.setSize(2);
+        pageResponse.setTotalElements(3);
+        pageResponse.setPage(1);
+
+        JobApplicationResponse response3 = new JobApplicationResponse();
+        response3.setStatus(APPLIED);
+        response3.setPosition("(Junior) Developer");
+        response3.setCompany("Microsoft");
+        response3.setId(3L);
+
+        List<JobApplicationResponse> responses = List.of(response3);
+        pageResponse.setContent(responses);
+
+        Mockito.when(service.getApplicationByStatus(Mockito.eq(APPLIED), Mockito.any(Pageable.class)))
+                .thenReturn(page);
+        Mockito.when(mapper.toResponse_withPagination(page)).thenReturn(pageResponse);
+        mockMvc.perform(get("/applications/status/{status}/page", "APPLIED")
+                .param("page", "1").param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page").value(1))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.content[0].id").value(3L))
+                .andExpect(jsonPath("$.content[0].status").value(APPLIED.name()))
+                .andExpect(jsonPath("$.content[0].position").value("(Junior) Developer"))
+                .andExpect(jsonPath("$.content[0].company").value("Microsoft"));
+        Mockito.verify(service).getApplicationByStatus(Mockito.eq(APPLIED), Mockito.any(Pageable.class));
     }
 }
