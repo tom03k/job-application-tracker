@@ -1,6 +1,7 @@
 package com.example.jobtracker;
 
 import com.example.jobtracker.exception.ApplicationNotFoundException;
+import com.example.jobtracker.model.ApplicationStatus;
 import com.example.jobtracker.model.JobApplication;
 import com.example.jobtracker.model.dto.JobApplicationPatchRequest;
 import com.example.jobtracker.repository.JobApplicationRepository;
@@ -12,11 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.jobtracker.model.ApplicationStatus.APPLIED;
-import static com.example.jobtracker.model.ApplicationStatus.REJECTED;
+import static com.example.jobtracker.model.ApplicationStatus.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -141,5 +142,93 @@ public class JobApplicationServiceTest {
         Page<JobApplication> result = service.getApplicationByStatus(APPLIED, pageable);
         assertSame(page, result);
         Mockito.verify(repository).findByStatus(APPLIED, pageable);
+    }
+
+    @Test
+    public void fullUpdateApplication() {
+        JobApplicationRepository repository = Mockito.mock(JobApplicationRepository.class);
+        JobApplicationService service = new JobApplicationService(repository);
+        JobApplication application = new JobApplication();
+        application.setId(1L);
+        application.setPosition("Junior Java Developer");
+        application.setStatus(APPLIED);
+        application.setCompany("Check24");
+        JobApplication updatedApplication = new JobApplication();
+        updatedApplication.setCompany("Open AI");
+        updatedApplication.setStatus(REJECTED);
+        updatedApplication.setPosition("Java Developer");
+        Mockito.when(repository.findById(1L))
+                .thenReturn(Optional.of(application));
+        Mockito.when(repository.save(application)).thenReturn(application);
+        JobApplication result = service.fullUpdateApplication(1L, updatedApplication);
+        Mockito.verify(repository).save(application);
+        assertEquals(updatedApplication.getCompany(), result.getCompany());
+        assertEquals(updatedApplication.getPosition(), result.getPosition());
+        assertEquals(updatedApplication.getStatus(), result.getStatus());
+        assertEquals(application.getId(), result.getId());
+    }
+
+    @Test
+    public void fullUpdateApplication_whenIdDoesNotExist() {
+        JobApplicationRepository repository = Mockito.mock(JobApplicationRepository.class);
+        JobApplicationService service = new JobApplicationService(repository);
+        JobApplication updatedApplication = new JobApplication();
+        Mockito.when(repository.findById(99L))
+                .thenReturn(Optional.empty());
+        assertThrows(ApplicationNotFoundException.class, () ->
+                service.fullUpdateApplication(99L, updatedApplication));
+    }
+
+    @Test
+    public void getApplicationByStatus_returnsApplication_whenStatusMatches() {
+        // Arrange
+        JobApplicationRepository repository = Mockito.mock(JobApplicationRepository.class);
+        JobApplicationService service = new JobApplicationService(repository);
+        JobApplication application = new JobApplication();
+        application.setStatus(APPLIED);
+        JobApplication application2 = new JobApplication();
+        application2.setStatus(REJECTED);
+        Mockito.when(repository.findByStatus(APPLIED))
+                .thenReturn(List.of(application));
+        // Act
+        List<JobApplication> result = service.getApplicationByStatus(APPLIED);
+        // Assert
+        assertEquals(List.of(application), result);
+        Mockito.verify(repository).findByStatus(APPLIED);
+    }
+
+    @Test
+    public void getApplicationByStatus_returnsEmpty_whenStatusDoesNotMatch() {
+        // Arrange
+        JobApplicationRepository repository = Mockito.mock(JobApplicationRepository.class);
+        JobApplicationService service = new JobApplicationService(repository);
+        Mockito.when(repository.findByStatus(INTERVIEW))
+                .thenReturn(new ArrayList<>());
+        // Act
+        List<JobApplication> result = service.getApplicationByStatus(INTERVIEW);
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getByCompanyAndStatus() {
+        JobApplicationRepository repository = Mockito.mock(JobApplicationRepository.class);
+        JobApplicationService service = new JobApplicationService(repository);
+        JobApplication application1 = new JobApplication();
+        application1.setStatus(APPLIED);
+        application1.setCompany("Gucci");
+        application1.setPosition("Software Developer");
+        JobApplication application2 = new JobApplication();
+        application2.setCompany("Gucci");
+        application2.setStatus(APPLIED);
+        application2.setPosition("Junior Developer");
+        JobApplication application3 = new JobApplication();
+        application3.setCompany("Gucci");
+        application3.setStatus(REJECTED);
+        Mockito.when(repository.findByCompanyAndStatus("Gucci", APPLIED))
+                .thenReturn(List.of(application1, application2));
+        List<JobApplication> result = service.getByCompanyAndStatus("Gucci", APPLIED);
+        assertEquals(List.of(application1, application2), result);
+        Mockito.verify(repository).findByCompanyAndStatus("Gucci", APPLIED);
     }
 }

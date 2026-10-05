@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.jobtracker.model.ApplicationStatus.APPLIED;
+import static com.example.jobtracker.model.ApplicationStatus.REJECTED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -256,5 +257,35 @@ public class JobApplicationControllerTest {
                 .andExpect(jsonPath("$.content[0].position").value("(Junior) Developer"))
                 .andExpect(jsonPath("$.content[0].company").value("Microsoft"));
         Mockito.verify(service).getApplicationByStatus(Mockito.eq(APPLIED), Mockito.any(Pageable.class));
+    }
+
+    @Test
+    public void fullUpdate_returns200_whenIdDoesExist() throws Exception {
+        JobApplication newApplication = new JobApplication();
+        newApplication.setCompany("Volkswagen");
+        newApplication.setPosition("Software Developer");
+        newApplication.setStatus(REJECTED);
+        newApplication.setId(1L);
+        JobApplicationResponse response = new JobApplicationResponse();
+        response.setId(1L);
+        response.setCompany("Volkswagen");
+        response.setPosition("Software Developer");
+        response.setStatus(REJECTED);
+        Mockito.when(service.fullUpdateApplication(1L, newApplication)).thenReturn(newApplication);
+        Mockito.when(mapper.toEntity(Mockito.any(JobApplicationRequest.class))).thenReturn(newApplication);
+        Mockito.when(mapper.toResponse(newApplication)).thenReturn(response);
+        mockMvc.perform(put("/applications/{id}", "1")
+                        .contentType(MediaType.APPLICATION_JSON).content("""
+                                {
+                                    "status": "REJECTED",
+                                    "company": "Volkswagen",
+                                    "position": "Software Developer"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.company").value("Volkswagen"))
+                .andExpect(jsonPath("$.position").value("Software Developer"))
+                .andExpect(jsonPath("$.status").value(REJECTED.name()));
     }
 }
