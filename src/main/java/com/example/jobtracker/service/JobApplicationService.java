@@ -81,4 +81,8 @@ public class JobApplicationService {
     public Page<JobApplication> getApplicationByStatus(ApplicationStatus status, Pageable pageable) {
         return applicationRepository.findByStatus(status, pageable);
     }
+
+    public List<JobApplication> getByCompanyContaining(String company) {
+        return applicationRepository.searchCompanyContaining(company);
+    }
 }

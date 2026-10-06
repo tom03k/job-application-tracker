@@ -105,11 +105,19 @@ public class JobApplicationController {
     }
 
     @GetMapping("/status/{status}/page")
-    public ResponseEntity<JobApplicationPageResponse> getStatusWithPagination(@PathVariable  ApplicationStatus status,
+    public ResponseEntity<JobApplicationPageResponse> getByStatusWithPagination(@PathVariable  ApplicationStatus status,
                                                                               Pageable pageable) {
         Page<JobApplication> page = applicationService.getApplicationByStatus(status, pageable);
         JobApplicationPageResponse response = mapper.toResponse_withPagination(page);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/company-search")
+    public ResponseEntity<List<JobApplicationResponse>> getByCompanyContaining(@RequestParam String company) {
+        List<JobApplicationResponse> responses = applicationService.getByCompanyContaining(company)
+                .stream()
+                .map(mapper::toResponse).toList();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
 }
