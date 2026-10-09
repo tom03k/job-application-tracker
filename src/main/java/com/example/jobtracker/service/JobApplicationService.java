@@ -1,6 +1,8 @@
 package com.example.jobtracker.service;
 
 import com.example.jobtracker.exception.ApplicationNotFoundException;
+import com.example.jobtracker.model.dto.ApplicationStatusCount;
+import com.example.jobtracker.model.dto.ApplicationStatusStatistic;
 import com.example.jobtracker.model.dto.JobApplicationPatchRequest;
 import com.example.jobtracker.model.ApplicationStatus;
 import com.example.jobtracker.model.JobApplication;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,5 +87,32 @@ public class JobApplicationService {
 
     public List<JobApplication> getByCompanyContaining(String company) {
         return applicationRepository.searchCompanyContaining(company);
+    }
+
+    public List<JobApplication> getByCompanyContainingAndByStatus(String company, ApplicationStatus status) {
+        return applicationRepository.searchCompanyContainingAndByStatus(company, status);
+    }
+
+    public List<JobApplication> getByCompanyContainingAndByStatusOrderByCompanyAsc(String company,
+                                                                                   ApplicationStatus status) {
+        return applicationRepository.searchCompanyContainingAndByStatusOrderByCompanyAsc(company, status);
+    }
+
+    public List<ApplicationStatusStatistic> getApplicationStatusStatistics() {
+        List<ApplicationStatusCount> lst = applicationRepository.getApplicationStatusCount();
+        long totalCount = applicationRepository.count();
+        if (totalCount == 0) {
+            return List.of();
+        }
+        List<ApplicationStatusStatistic> result = new ArrayList<>();
+        for (ApplicationStatusCount applicationStatusCount : lst) {
+            ApplicationStatusStatistic applicationStatusStatistic =
+                    new ApplicationStatusStatistic(
+                            applicationStatusCount.status(), applicationStatusCount.count(),
+                            (double) applicationStatusCount.count() / totalCount * 100
+                    );
+            result.add(applicationStatusStatistic);
+        }
+        return result;
     }
 }

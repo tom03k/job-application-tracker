@@ -1,12 +1,9 @@
 package com.example.jobtracker.controller;
 
 import com.example.jobtracker.mapper.JobApplicationMapper;
-import com.example.jobtracker.model.dto.JobApplicationPageResponse;
-import com.example.jobtracker.model.dto.JobApplicationPatchRequest;
+import com.example.jobtracker.model.dto.*;
 import com.example.jobtracker.model.ApplicationStatus;
 import com.example.jobtracker.model.JobApplication;
-import com.example.jobtracker.model.dto.JobApplicationRequest;
-import com.example.jobtracker.model.dto.JobApplicationResponse;
 import com.example.jobtracker.service.JobApplicationService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -113,11 +110,41 @@ public class JobApplicationController {
     }
 
     @GetMapping("/company-search")
-    public ResponseEntity<List<JobApplicationResponse>> getByCompanyContaining(@RequestParam String company) {
-        List<JobApplicationResponse> responses = applicationService.getByCompanyContaining(company)
+    public ResponseEntity<List<JobApplicationResponse>> getByCompanyContaining(
+            @RequestParam String company,
+            @RequestParam(required = false) ApplicationStatus status
+    ) {
+        List<JobApplication> applications;
+        if (status == null) {
+            applications = applicationService.getByCompanyContaining(company);
+        }
+        else {
+            applications = applicationService.getByCompanyContainingAndByStatus(company, status);
+        }
+        List<JobApplicationResponse> responses = applications
                 .stream()
-                .map(mapper::toResponse).toList();
+                .map(mapper::toResponse)
+                .toList();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
+    @GetMapping("/company-search/sorted")
+    public ResponseEntity<List<JobApplicationResponse>> getByCompanyContainingSorted(
+            @RequestParam String company,
+            @RequestParam ApplicationStatus status
+    ) {
+        List<JobApplication> applications = applicationService
+                .getByCompanyContainingAndByStatusOrderByCompanyAsc(company, status);
+        List<JobApplicationResponse> responses = applications
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    @GetMapping("/status-statistics")
+    public ResponseEntity<List<ApplicationStatusStatistic>> getApplicationStatusStatistics() {
+        List<ApplicationStatusStatistic> result = applicationService.getApplicationStatusStatistics();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
