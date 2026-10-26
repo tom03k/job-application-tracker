@@ -65,7 +65,7 @@ public class JobApplicationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<JobApplicationResponse> fullUpdate(@PathVariable Long id,
-                                                             @RequestBody JobApplicationRequest updatedApplicationRequest) {
+                                                             @Valid @RequestBody JobApplicationRequest updatedApplicationRequest) {
         JobApplication application = applicationService.fullUpdateApplication(
                 id,
                 mapper.toEntity(updatedApplicationRequest));

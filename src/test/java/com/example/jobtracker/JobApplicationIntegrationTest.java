@@ -10,18 +10,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import static com.example.jobtracker.model.ApplicationStatus.APPLIED;
+import static com.example.jobtracker.model.ApplicationStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static com.example.jobtracker.model.ApplicationStatus.REJECTED;
-
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class JobApplicationIntegrationTest {
     @Autowired
     MockMvc mockMvc;
@@ -155,5 +155,88 @@ public class JobApplicationIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedApplication)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getAll_returns200() throws Exception {
+        JobApplication application = new JobApplication();
+        application.setPosition("Junior Developer");
+        application.setCompany("Samsung");
+        application.setStatus(REJECTED);
+        JobApplication savedApplication = repository.save(application);
+        JobApplication application2 = new JobApplication();
+        application2.setPosition("Junior Java Developer");
+        application2.setCompany("EA");
+        application2.setStatus(APPLIED);
+        JobApplication savedApplication2 = repository.save(application2);
+        JobApplication application3 = new JobApplication();
+        application3.setPosition("Junior Java Engineer");
+        application3.setCompany("BYD");
+        application3.setStatus(REJECTED);
+        JobApplication savedApplication3 = repository.save(application3);
+        JobApplication application4 = new JobApplication();
+        application4.setPosition("Junior Developer");
+        application4.setCompany("Google");
+        application4.setStatus(INTERVIEW);
+        JobApplication savedApplication4 = repository.save(application4);
+        mockMvc.perform(get("/applications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(4))
+                .andExpect(jsonPath("$[2].company").value("BYD"));
+    }
+
+    @Test
+    public void getAll_returnsEmptyList_whenNoApplicationsExist() throws Exception {
+        mockMvc.perform(get("/applications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    public void fullUpdate_returns400_whenPositionIsBlank() throws Exception {
+        JobApplication application = new JobApplication();
+        application.setPosition("Junior Developer");
+        application.setCompany("Samsung");
+        application.setStatus(APPLIED);
+
+        JobApplication savedApplication = repository.save(application);
+        JobApplicationRequest updatedApplication = new JobApplicationRequest();
+        updatedApplication.setStatus(REJECTED);
+        updatedApplication.setCompany("Apple");
+        updatedApplication.setPosition(" ");
+        mockMvc.perform(put("/applications/{id}", savedApplication.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedApplication)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.position").value("must not be blank"));
+    }
+
+    @Test
+    public void getByStatusWithPagination_returns200() throws Exception {
+        JobApplication application = new JobApplication();
+        application.setPosition("Junior Developer");
+        application.setCompany("Samsung");
+        application.setStatus(REJECTED);
+        JobApplication savedApplication = repository.save(application);
+        JobApplication application2 = new JobApplication();
+        application2.setPosition("Junior Java Developer");
+        application2.setCompany("EA");
+        application2.setStatus(APPLIED);
+        JobApplication savedApplication2 = repository.save(application2);
+        JobApplication application3 = new JobApplication();
+        application3.setPosition("Junior Java Engineer");
+        application3.setCompany("BYD");
+        application3.setStatus(REJECTED);
+        JobApplication savedApplication3 = repository.save(application3);
+        JobApplication application4 = new JobApplication();
+        application4.setPosition("Junior Developer");
+        application4.setCompany("Google");
+        application4.setStatus(INTERVIEW);
+        JobApplication savedApplication4 = repository.save(application4);
+        mockMvc.perform(get("/applications/status/{status}/page", REJECTED)
+                        .param("page", "1").param("size", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].company").value(application3.getCompany()));
     }
 }
