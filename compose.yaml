@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: jobtracker-postgres
+    environment:
+      POSTGRES_DB: jobtracker
+      POSTGRES_USER: jobtracker
+      POSTGRES_PASSWORD: local_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - jobtracker-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobtracker -d jobtracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  jobtracker-postgres-data:
+
+  
