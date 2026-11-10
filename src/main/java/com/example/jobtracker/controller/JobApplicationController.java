@@ -29,21 +29,11 @@ public class JobApplicationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobApplicationResponse>> getAll(@RequestParam(required = false) ApplicationStatus status,
-                                       @RequestParam(required = false) String company) {
-        List<JobApplication> applications;
-        if (status != null && company != null) {
-            applications = applicationService.getByCompanyAndStatus(company, status);
-        } else if (status != null) {
-            applications = applicationService.getApplicationByStatus(status);
-        } else if(company != null)  {
-            applications = applicationService.getByCompany(company);
-        }
-        else {
-            applications = applicationService.getApplicationList();
-        }
-        List<JobApplicationResponse> responses = applications.stream().map(mapper::toResponse).toList();
-        return ResponseEntity.ok(responses);
+    public ResponseEntity<JobApplicationPageResponse> getAll(@RequestParam(required = false) ApplicationStatus status,
+                                       @RequestParam(required = false) String company, Pageable pageable) {
+        Page<JobApplication> applicationsPage = applicationService.searchApplicationsPaged(company, status, pageable);
+        JobApplicationPageResponse response = mapper.toResponse_withPagination(applicationsPage);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

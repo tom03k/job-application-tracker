@@ -16,6 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 import static com.example.jobtracker.model.ApplicationStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -180,16 +181,17 @@ public class JobApplicationIntegrationTest {
         application4.setStatus(INTERVIEW);
         JobApplication savedApplication4 = repository.save(application4);
         mockMvc.perform(get("/applications"))
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[2].company").value("BYD"));
+                .andExpect(jsonPath("$.content.length()").value(4))
+                .andExpect(jsonPath("$.content[2].company").value("BYD"));
     }
 
     @Test
     public void getAll_returnsEmptyList_whenNoApplicationsExist() throws Exception {
         mockMvc.perform(get("/applications"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.content.length()").value(0));
     }
 
     @Test

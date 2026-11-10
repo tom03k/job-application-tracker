@@ -7,8 +7,10 @@ import com.example.jobtracker.model.dto.JobApplicationPatchRequest;
 import com.example.jobtracker.model.ApplicationStatus;
 import com.example.jobtracker.model.JobApplication;
 import com.example.jobtracker.repository.JobApplicationRepository;
+import com.example.jobtracker.specification.JobApplicationSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -114,5 +116,17 @@ public class JobApplicationService {
             result.add(applicationStatusStatistic);
         }
         return result;
+    }
+
+    public List<JobApplication> searchApplications(String company, ApplicationStatus status) {
+        Specification<JobApplication> spec = JobApplicationSpecification.hasStatus(status)
+                                                .and(JobApplicationSpecification.companyContains(company));
+        return applicationRepository.findAll(spec);
+    }
+
+    public Page<JobApplication> searchApplicationsPaged(String company, ApplicationStatus status, Pageable pageable) {
+        Specification<JobApplication> spec = JobApplicationSpecification.hasStatus(status)
+                                                .and(JobApplicationSpecification.companyContains(company));
+        return applicationRepository.findAll(spec, pageable);
     }
 }
