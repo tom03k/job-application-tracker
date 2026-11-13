@@ -15,6 +15,7 @@ public class JobApplicationMapper {
         response.setCompany(application.getCompany());
         response.setPosition(application.getPosition());
         response.setStatus(application.getStatus());
+        response.setApplicationDate(application.getApplicationDate());
         return response;
     }
 
@@ -23,6 +24,7 @@ public class JobApplicationMapper {
         application.setCompany(request.getCompany());
         application.setStatus(request.getStatus());
         application.setPosition(request.getPosition());
+        application.setApplicationDate(request.getApplicationDate());
         return application;
     }
 

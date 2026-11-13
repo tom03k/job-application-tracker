@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,16 +51,19 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Adidas");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         repository.save(application);
         repository.save(application2);
@@ -74,16 +78,19 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Adidas");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         repository.save(application);
         repository.save(application2);
@@ -98,16 +105,19 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Samsung");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         repository.save(application);
         repository.save(application2);
@@ -122,16 +132,19 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Samsung");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         repository.save(application);
         repository.save(application2);
@@ -147,16 +160,19 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Samsung");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         repository.save(application);
         repository.save(application2);
@@ -172,22 +188,25 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Samsung");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         JobApplication application4 = new JobApplication();
         application4.setPosition("Java Developer");
         application4.setStatus(APPLIED);
         application4.setCompany("Audi");
-
+        application4.setApplicationDate(LocalDate.of(2026, 9, 23));
 
         repository.save(application);
         repository.save(application2);
@@ -206,22 +225,25 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Samsung");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         JobApplication application4 = new JobApplication();
         application4.setPosition("Java Developer");
         application4.setStatus(APPLIED);
         application4.setCompany("Audi");
-
+        application4.setApplicationDate(LocalDate.of(2026, 9, 23));
 
         repository.save(application);
         repository.save(application2);
@@ -243,22 +265,25 @@ public class JobApplicationRepositoryTest {
         application.setPosition("Junior Developer");
         application.setStatus(APPLIED);
         application.setCompany("Samsung");
+        application.setApplicationDate(LocalDate.of(2026, 9, 20));
 
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setStatus(APPLIED);
         application2.setCompany("Apple");
+        application2.setApplicationDate(LocalDate.of(2026, 9, 21));
 
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Software Developer");
         application3.setStatus(REJECTED);
         application3.setCompany("Samsung");
+        application3.setApplicationDate(LocalDate.of(2026, 9, 22));
 
         JobApplication application4 = new JobApplication();
         application4.setPosition("Java Developer");
         application4.setStatus(APPLIED);
         application4.setCompany("Audi");
-
+        application4.setApplicationDate(LocalDate.of(2026, 9, 23));
 
         repository.save(application);
         repository.save(application2);

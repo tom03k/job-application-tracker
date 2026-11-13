@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +68,7 @@ public class JobApplicationControllerTest {
         application.setCompany("Check24");
         application.setPosition("Junior Java Developer");
         application.setStatus(APPLIED);
+        application.setApplicationDate(LocalDate.of(2026, 11, 13));
         Mockito.when(service.addApplication(application))
                 .thenReturn(application);
         Mockito.when(mapper.toEntity(Mockito.any(JobApplicationRequest.class)))
@@ -76,6 +78,7 @@ public class JobApplicationControllerTest {
         response.setCompany("Check24");
         response.setPosition("Junior Java Developer");
         response.setStatus(APPLIED);
+        response.setApplicationDate(LocalDate.of(2026, 11, 13));
         Mockito.when(mapper.toResponse(application))
                 .thenReturn(response);
         mockMvc.perform(post("/applications")
@@ -83,14 +86,16 @@ public class JobApplicationControllerTest {
                                 {
                                     "company": "Check24",
                                     "position": "Junior Java Developer",
-                                    "status": "APPLIED"
+                                    "status": "APPLIED",
+                                    "applicationDate": "2026-11-13"
                                 }
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.company").value("Check24"))
                 .andExpect(jsonPath("$.position").value("Junior Java Developer"))
-                .andExpect(jsonPath("$.status").value("APPLIED"));
+                .andExpect(jsonPath("$.status").value("APPLIED"))
+                .andExpect(jsonPath("$.applicationDate").value("2026-11-13"));
         Mockito.verify(service).addApplication(application);
     }
 
@@ -266,11 +271,13 @@ public class JobApplicationControllerTest {
         newApplication.setPosition("Software Developer");
         newApplication.setStatus(REJECTED);
         newApplication.setId(1L);
+        newApplication.setApplicationDate(LocalDate.of(2026, 10, 2));
         JobApplicationResponse response = new JobApplicationResponse();
         response.setId(1L);
         response.setCompany("Volkswagen");
         response.setPosition("Software Developer");
         response.setStatus(REJECTED);
+        response.setApplicationDate(LocalDate.of(2026, 10, 2));
         Mockito.when(service.fullUpdateApplication(1L, newApplication)).thenReturn(newApplication);
         Mockito.when(mapper.toEntity(Mockito.any(JobApplicationRequest.class))).thenReturn(newApplication);
         Mockito.when(mapper.toResponse(newApplication)).thenReturn(response);
@@ -279,13 +286,15 @@ public class JobApplicationControllerTest {
                                 {
                                     "status": "REJECTED",
                                     "company": "Volkswagen",
-                                    "position": "Software Developer"
+                                    "position": "Software Developer",
+                                    "applicationDate": "2026-10-02"
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.company").value("Volkswagen"))
                 .andExpect(jsonPath("$.position").value("Software Developer"))
-                .andExpect(jsonPath("$.status").value(REJECTED.name()));
+                .andExpect(jsonPath("$.status").value(REJECTED.name()))
+                .andExpect(jsonPath("$.applicationDate").value("2026-10-02"));
     }
 }

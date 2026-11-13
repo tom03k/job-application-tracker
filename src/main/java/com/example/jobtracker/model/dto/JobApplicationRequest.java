@@ -4,6 +4,8 @@ import com.example.jobtracker.model.ApplicationStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 public class JobApplicationRequest {
     @NotBlank
     private String company;
@@ -11,6 +13,16 @@ public class JobApplicationRequest {
     private String position;
     @NotNull
     private ApplicationStatus status;
+    @NotNull
+    private LocalDate applicationDate;
+
+    public LocalDate getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(LocalDate applicationDate) {
+        this.applicationDate = applicationDate;
+    }
 
     public String getCompany() {
         return company;

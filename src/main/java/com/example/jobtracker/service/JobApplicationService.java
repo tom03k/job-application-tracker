@@ -44,6 +44,7 @@ public class JobApplicationService {
         application.setCompany(updatedApplication.getCompany());
         application.setPosition(updatedApplication.getPosition());
         application.setStatus(updatedApplication.getStatus());
+        application.setApplicationDate(updatedApplication.getApplicationDate());
         return applicationRepository.save(application);
     }
 
@@ -60,6 +61,9 @@ public class JobApplicationService {
         }
         if(updatedApplication.getCompany() != null) {
             application.get().setCompany(updatedApplication.getCompany());
+        }
+        if(updatedApplication.getApplicationDate() != null) {
+            application.get().setApplicationDate(updatedApplication.getApplicationDate());
         }
         return applicationRepository.save(application.get());
     }

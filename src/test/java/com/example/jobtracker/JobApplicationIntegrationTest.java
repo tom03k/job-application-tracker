@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
+
 import static com.example.jobtracker.model.ApplicationStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -61,6 +63,7 @@ public class JobApplicationIntegrationTest {
         request.setStatus(APPLIED);
         request.setPosition("Junior Developer");
         request.setCompany("Audi");
+        request.setApplicationDate(LocalDate.of(2026, 10, 5));
         mockMvc.perform(post("/applications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -68,7 +71,8 @@ public class JobApplicationIntegrationTest {
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.position").value("Junior Developer"))
                 .andExpect(jsonPath("$.company").value("Audi"))
-                .andExpect(jsonPath("$.status").value(APPLIED.name()));
+                .andExpect(jsonPath("$.status").value(APPLIED.name()))
+                .andExpect(jsonPath("$.applicationDate").value("2026-10-05"));
     }
 
     @Test
@@ -96,6 +100,7 @@ public class JobApplicationIntegrationTest {
         updatedApplication.setStatus(REJECTED);
         updatedApplication.setCompany("Apple");
         updatedApplication.setPosition("Software Developer");
+        updatedApplication.setApplicationDate(LocalDate.of(2026, 10, 9));
         mockMvc.perform(put("/applications/{id}", savedApplication.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedApplication)))
@@ -103,7 +108,8 @@ public class JobApplicationIntegrationTest {
                 .andExpect(jsonPath("$.id").value(savedApplication.getId()))
                 .andExpect(jsonPath("$.position").value("Software Developer"))
                 .andExpect(jsonPath("$.company").value("Apple"))
-                .andExpect(jsonPath("$.status").value(REJECTED.name()));
+                .andExpect(jsonPath("$.status").value(REJECTED.name()))
+                .andExpect(jsonPath("$.applicationDate").value("2026-10-09"));;
         JobApplication updated =
                 repository.findById(savedApplication.getId()).orElseThrow();
         assertEquals("Apple", updated.getCompany());
@@ -117,6 +123,7 @@ public class JobApplicationIntegrationTest {
         updatedApplication.setStatus(REJECTED);
         updatedApplication.setCompany("Apple");
         updatedApplication.setPosition("Software Developer");
+        updatedApplication.setApplicationDate(LocalDate.of(2026, 9, 6));
         mockMvc.perform(put("/applications/9999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedApplication)))
@@ -164,21 +171,25 @@ public class JobApplicationIntegrationTest {
         application.setPosition("Junior Developer");
         application.setCompany("Samsung");
         application.setStatus(REJECTED);
+        application.setApplicationDate(LocalDate.of(2026, 10, 7));
         JobApplication savedApplication = repository.save(application);
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setCompany("EA");
         application2.setStatus(APPLIED);
+        application2.setApplicationDate(LocalDate.of(2026, 10, 8));
         JobApplication savedApplication2 = repository.save(application2);
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Java Engineer");
         application3.setCompany("BYD");
         application3.setStatus(REJECTED);
+        application3.setApplicationDate(LocalDate.of(2026, 10, 9));
         JobApplication savedApplication3 = repository.save(application3);
         JobApplication application4 = new JobApplication();
         application4.setPosition("Junior Developer");
         application4.setCompany("Google");
         application4.setStatus(INTERVIEW);
+        application4.setApplicationDate(LocalDate.of(2026, 10, 10));
         JobApplication savedApplication4 = repository.save(application4);
         mockMvc.perform(get("/applications"))
                 .andDo(print())
@@ -219,21 +230,25 @@ public class JobApplicationIntegrationTest {
         application.setPosition("Junior Developer");
         application.setCompany("Samsung");
         application.setStatus(REJECTED);
+        application.setApplicationDate(LocalDate.of(2026, 10, 7));
         JobApplication savedApplication = repository.save(application);
         JobApplication application2 = new JobApplication();
         application2.setPosition("Junior Java Developer");
         application2.setCompany("EA");
         application2.setStatus(APPLIED);
+        application2.setApplicationDate(LocalDate.of(2026, 10, 8));
         JobApplication savedApplication2 = repository.save(application2);
         JobApplication application3 = new JobApplication();
         application3.setPosition("Junior Java Engineer");
         application3.setCompany("BYD");
         application3.setStatus(REJECTED);
+        application3.setApplicationDate(LocalDate.of(2026, 10, 9));
         JobApplication savedApplication3 = repository.save(application3);
         JobApplication application4 = new JobApplication();
         application4.setPosition("Junior Developer");
         application4.setCompany("Google");
         application4.setStatus(INTERVIEW);
+        application4.setApplicationDate(LocalDate.of(2026, 10, 10));
         JobApplication savedApplication4 = repository.save(application4);
         mockMvc.perform(get("/applications/status/{status}/page", REJECTED)
                         .param("page", "1").param("size", "1"))

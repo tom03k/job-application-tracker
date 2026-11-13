@@ -2,11 +2,22 @@ package com.example.jobtracker.model.dto;
 
 import com.example.jobtracker.model.ApplicationStatus;
 
+import java.time.LocalDate;
+
 public class JobApplicationResponse {
     private Long id;
     private String company;
     private String position;
     private ApplicationStatus status;
+    private LocalDate applicationDate;
+
+    public LocalDate getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(LocalDate applicationDate) {
+        this.applicationDate = applicationDate;
+    }
 
     public Long getId() {
         return id;

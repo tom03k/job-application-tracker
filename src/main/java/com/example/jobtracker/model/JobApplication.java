@@ -7,17 +7,33 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 @Entity
 public class JobApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
     @NotBlank
     private String company;
+
     @NotBlank
     private String position;
+
     @NotNull
     private ApplicationStatus status;
+
+    @NotNull
+    private LocalDate applicationDate;
+
+    public LocalDate getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(LocalDate applicationDate) {
+        this.applicationDate = applicationDate;
+    }
 
     public Long getId() {
         return id;
